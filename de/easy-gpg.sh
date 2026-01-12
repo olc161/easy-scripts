@@ -2,7 +2,7 @@
 
 clear
 # ===========================
-# Farben & Symbole
+# Colors & Symbols
 # ===========================
 C_RESET="\033[0m"
 C_INFO="\033[0;36m"
@@ -30,17 +30,17 @@ msg() {
 }
 
 # ===========================
-# Aktionen
+# Actions
 # ===========================
 generate_key() {
   clear
-  msg info "Starte GPG Key Erstellung..."
+  msg info "Starting GPG Key creation..."
   gpg --full-generate-key
 }
 
 list_public_keys() {
   clear
-  msg title "Öffentliche Schlüssel"
+  msg title "Public Key"
   gpg --list-keys --with-colons | awk -F: '
     $1 == "pub" {algo=$4; keyid=$5}
     $1 == "fpr" {fpr=$10}
@@ -53,7 +53,7 @@ list_public_keys() {
 
 list_private_keys() {
   clear
-  msg title "Private Schlüssel"
+  msg title "Private Key"
   gpg --list-secret-keys --with-colons | awk -F: '
     $1 == "sec" {algo=$4; keyid=$5}
     $1 == "fpr" {fpr=$10}
@@ -66,81 +66,81 @@ list_private_keys() {
 
 
 export_key() {
-  read -p "Key-ID eingeben: " KEYID
-  read -e -p "Dateiname für Export (z.B. key.asc): " FILE
+  read -p "Enter Key-ID: " KEYID
+  read -e -p "Filename for export (for example key.asc): " FILE
   gpg --armor --export "$KEYID" > "$FILE"
-  msg ok "Schlüssel exportiert nach ${ICON_FILE} $FILE"
+  msg ok "Exported key to ${ICON_FILE} $FILE"
 }
 
 export_private_key() {
-  read -p "Key-ID eingeben: " KEYID
-  read -e -p "Dateiname für Export (z.B. privkey.gpg): " FILE
+  read -p "Enter Key-ID: " KEYID
+  read -e -p "Filename for export (for example privkey.gpg): " FILE
   gpg --armor --export-secret-keys "$KEYID" > "$FILE"
-  msg ok "Privater Schlüssel exportiert nach ${ICON_FILE} $FILE"
+  msg ok "Private Key exportet to ${ICON_FILE} $FILE"
 }
 
 import_key() {
   clear
-  read -e -p "Pfad zur Schlüsseldatei: " FILE
+  read -e -p "Path to key file: " FILE
   gpg --import "$FILE"
-  msg ok "Schlüssel importiert."
+  msg ok "Key Importet."
 }
 
 delete_key() {
-  read -p "Key-ID eingeben: " KEYID
+  read -p "Enter Key-ID: " KEYID
   gpg --delete-secret-and-public-keys "$KEYID"
-  msg warn "Schlüssel $KEYID gelöscht."
+  msg warn "Key $KEYID deleted."
 }
 
 edit_key() {
-  read -p "Key-ID eingeben: " KEYID
+  read -p "Enter Key-ID: " KEYID
   gpg --edit-key "$KEYID"
 }
 
 encrypt_file() {
   clear
-  read -e -p "Datei/Ordner zum Verschlüsseln: " FILE
-  read -p "Empfänger (Email oder Key-ID): " RECIPIENT
-  read -e -p "Ausgabe-Datei (z.B. file.gpg): " OUT
+  read -e -p "Encrypt file/folder: " FILE
+  read -p "Recipient (Email or Key-ID): " RECIPIENT
+  read -e -p "Output-file (for example file.gpg): " OUT
   gpgtar --encrypt --output "$OUT" --recipient "$RECIPIENT" "$FILE"
-  msg ok "Datei erfolgreich verschlüsselt → ${ICON_FILE} $OUT"
+  msg ok "File encrypted → ${ICON_FILE} $OUT"
 }
 
 encrypt_file_symmetric() {
   clear
-  read -e -p "Datei zum Verschlüsseln: " FILE
-  read -e -p "Ausgabe-Datei (z.B. file.gpg): " OUT
+  read -e -p "File to encrypt: " FILE
+  read -e -p "Output-file (for example file.gpg): " OUT
   gpg --symmetric --cipher-algo AES256 --output "$OUT" "$FILE"
-  msg ok "Datei symmetrisch verschlüsselt → ${ICON_FILE} $OUT"
+  msg ok "File symmetrically encrypted → ${ICON_FILE} $OUT"
 }
 
 decrypt_file() {
   clear
-  read -e -p "Datei zum Entschlüsseln: " FILE
-  read -e -p "Ausgabe-Datei (z.B. out.txt): " OUT
+  read -e -p "File to decrypt: " FILE
+  read -e -p "Output-file (z.B. out.txt): " OUT
   gpg --output "$OUT" --decrypt "$FILE"
-  msg ok "Datei entschlüsselt → ${ICON_FILE} $OUT"
+  msg ok "file decrypted → ${ICON_FILE} $OUT"
 }
 
 # ===========================
 # Hauptmenü
 # ===========================
 while true; do
-  msg title "GPG Management Menü"
-  echo "1) ${ICON_KEY} Neuen Schlüssel erstellen"
-  echo "2) ${ICON_KEY} Öffentliche Schlüssel anzeigen"
-  echo "3) ${ICON_KEY} Private Schlüssel anzeigen"
-  echo "4) ${ICON_FILE} Schlüssel exportieren"
-  echo "5) ${ICON_FILE} Privaten Schlüssel exportieren"
-  echo "6) ${ICON_FILE} Schlüssel importieren"
-  echo "7) ${ICON_WARN} Schlüssel löschen"
-  echo "8) ${ICON_KEY} Schlüssel bearbeiten"
-  echo "9) 🔒 Datei/Ordner verschlüsseln (Empfänger)"
+  msg title "GPG Management Menu"
+  echo "1) ${ICON_KEY} Create new Key"
+  echo "2) ${ICON_KEY} Show Public Keys"
+  echo "3) ${ICON_KEY} Show Private Keys"
+  echo "4) ${ICON_FILE} Export Keys"
+  echo "5) ${ICON_FILE} Export Private Keys"
+  echo "6) ${ICON_FILE} Import Key"
+  echo "7) ${ICON_WARN} Delete Key"
+  echo "8) ${ICON_KEY} Edit Key"
+  echo "9) 🔒 Encrypt file/folder (Recipient)"
   echo "10) 🔑 Datei symmetrisch verschlüsseln"
-  echo "11) 🔓 Datei entschlüsseln"
-  echo "0) 🚪 Beenden"
+  echo "11) 🔓 Decrypt file"
+  echo "0) 🚪 exit"
 
-  read -p "Auswahl: " CHOICE
+  read -p "choice: " CHOICE
 
   case $CHOICE in
     1) generate_key ;;
@@ -154,7 +154,7 @@ while true; do
     9) encrypt_file ;;
     10) encrypt_file_symmetric ;;
     11) decrypt_file ;;
-    0) msg info "Beende Script."; exit 0 ;;
-    *) msg err "Ungültige Auswahl!" ;;
+    0) msg info "Ending Script."; exit 0 ;;
+    *) msg err "Invalid selection!" ;;
   esac
 done

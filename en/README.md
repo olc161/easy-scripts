@@ -16,3 +16,5 @@ So I thought, that i wanted to share it with all of you
   - easy-shred is a simple script to make the basic: "shred" Command simpler so you dont need to deal with the syntax
 - [easy-sync.sh](https://github.com/olc161/easy-scripts/blob/main/easy-sync.sh)
   - easy-sync is an an simple CLI Tool to Move or Copy from one, to another device or server.
+- [easy-startup.sh](https://github.com/olc161/easy-scripts/blob/main/easy-startup.sh)
+  - easy-startup is my little startup programm that runs every time, when i boot up my pc to start the essential programms
